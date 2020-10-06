@@ -6,3 +6,5 @@ This is a Flask APP that will run on your local machine until ready for deployme
 This app is build on https://scripture.api.bible/ 
 
 There is an API key in the basic.py file that was created with an accound I created
+
+This is a very rough sketch of an app to test the api out
