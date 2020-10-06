@@ -11,11 +11,14 @@ app.config['SECRET_KEY'] = 'my_secret_key'
 
 
 class InfoForm(FlaskForm):
-    search = StringField('What verse are you looking for?')
+    # This will become more intuitive, but just to test functionality you type JHN.3.16., In the future you could search john 3:16
+    search = StringField('What verse are you looking for? Example: JHN.3.16, ISA.1.1, 1TI.2.3')
     submit = SubmitField('Search')
 
 
 def book_list():
+    # This function gathers list of books in the bible. It returns a JSON array which will be looped through. In the furure there will be 
+    # a funtions for books chapters, and verses of books. The plan is to have it all clickable. 
     api_header = {
         'api-key': 'b60192d669b35ccaf0693cb1a0775856'
     }
@@ -40,9 +43,7 @@ def index():
         search = form.search.data
         form.search.data = ''
 
-
-        # url = "https://api.scripture.api.bible/v1/bibles/06125adad2d5898a-01/verses/{}".format(search)
-        url = "https://api.scripture.api.bible/v1/bibles/06125adad2d5898a-01/books?include-chapters=false&include-chapters-and-sections=false"
+        url = "https://api.scripture.api.bible/v1/bibles/06125adad2d5898a-01/verses/{}".format(search)
 
         payload = {}
         headers = {
@@ -51,8 +52,6 @@ def index():
 
         response = requests.request("GET", url, headers=headers, data=payload)
         response_text = json.loads(response.text)
-
-
 
     return render_template('index.html', form=form, search=search, response_text=response_text, book_list_for_html=book_list_for_html)
 
