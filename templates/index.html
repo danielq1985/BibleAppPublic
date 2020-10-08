@@ -12,7 +12,6 @@
     {% if search %}
     You searched for: {{search}}
     {% else %}
-    Enter search here:
     {% endif%}
 
 </p>
@@ -21,29 +20,25 @@
 
     {{ form.hidden_tag()}}
     {{ form.search.label }} {{ form.search }}
+    {{ form.book_list_selector.label}} {{ form.book_list_selector}}
+    <select name="chapter" method="GET" action="/">
+    {% for item in t["data"] %}
+        <option value="{{item["id"]}}" SELECTED>{{item["id"]}}</option>"
+    {% endfor %}
+    </select>
+
     {{ form.submit() }}
 
 </form>
 
-<p>
+
 
 <!--This is the payload from the api pull. It is currently in JSON format at the moment to test functionality-->
-{{response_text["data"]}}
+<!--{{response_text["content"]}}-->
+<!--{{t}}-->
 
-</p>
-
-<!--This is to test functionality of looping through a JSON array. In the future you will be able to navigate the bible-->
-<!--by just clicking buttons, no text. The buttons dont do anything yet, but you can see that the value will be pulled-->
-<!--from what item you click in the array.-->
-<p>
-    {% for item in book_list_for_html["data"] %}
-
-    <button type="button" class="btn btn-outline-primary" value="{{item["id"]}}">{{item["name"]}}</button>
-
-    {% endfor %}
-
-</p>
-
-
-
-
+<!--<select name="chapter" method="GET" action="/">-->
+<!--    {% for item in t["data"] %}-->
+<!--        <option value="{{item["number"]}}" SELECTED>{{item["number"]}}</option>"-->
+<!--    {% endfor %}-->
+<!--</select>-->
