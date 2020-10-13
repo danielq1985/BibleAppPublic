@@ -1,5 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-{{search_string_response}}
+
+
+{% for item in search_string_response %}
+<ul>
+    <b>{{item["reference"]}}</b>
+    <br>
+    <i>{{item["text"]}}</i>
+</ul>
+
+{% endfor %}
+
 {% endblock %}
