@@ -68,7 +68,9 @@ def search_bible(api, search_string):
         .format(search_string.replace(" ", "%20"))
     response = requests.request("GET", url, headers=api, data=payload)
     response_json = json.loads(response.text)
-    return response_json
+    response_json1 = response_json["data"]
+    response_json2 = response_json1["verses"]
+    return response_json2
 
 # # # # # Classes # # # # #
 
