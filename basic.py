@@ -105,16 +105,19 @@ def index():
     form = InfoForm()
     book_data = form.book_list_selector.data
 
-    form_search = SearchForm()
-    search_string = False
+    # form_search = SearchForm()
+    # search_string = False
 
     if form.validate_on_submit():
         return redirect(url_for('book', book_data=book_data))
 
+    form_search = SearchForm()
+    search_string = False
     if form_search.validate_on_submit():
         search_string = form_search.search_string.data
         form_search.search_string.data = ''
         return redirect(url_for('search', search_string=search_string))
+
     return render_template('index.html', form=form, form_search=form_search)
 
 
@@ -132,7 +135,15 @@ def book():
 
     if form2.validate_on_submit():
         return redirect(url_for('verse', verse_data=verse_data))
-    return render_template('book.html', book_id=book_id, data=data, form2=form2)
+
+    form_search = SearchForm()
+    search_string = False
+    if form_search.validate_on_submit():
+        search_string = form_search.search_string.data
+        form_search.search_string.data = ''
+        return redirect(url_for('search', search_string=search_string))
+    return render_template('book.html', book_id=book_id, data=data, form2=form2, form_search=form_search)
+
 
 
 @app.route('/verse', methods=['GET', 'POST'])
@@ -140,7 +151,14 @@ def verse():
     verse_id = request.args.get('verse_data', None)
     chapter_text = book_chapter_content(api_header, verse_id)
 
-    return render_template('verses.html', verse_id=verse_id, chapter_text=chapter_text)
+    form_search = SearchForm()
+    search_string = False
+    if form_search.validate_on_submit():
+        search_string = form_search.search_string.data
+        form_search.search_string.data = ''
+        return redirect(url_for('search', search_string=search_string))
+
+    return render_template('verses.html', verse_id=verse_id, chapter_text=chapter_text, form_search=form_search)
 
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -148,7 +166,14 @@ def search():
     search_string = request.args.get('search_string', None)
     search_string_response = search_bible(api_header, search_string)
 
-    return render_template('search.html', search_string_response=search_string_response)
+    form_search = SearchForm()
+    search_string = False
+    if form_search.validate_on_submit():
+        search_string = form_search.search_string.data
+        form_search.search_string.data = ''
+        return redirect(url_for('search', search_string=search_string))
+
+    return render_template('search.html', search_string_response=search_string_response, form_search=form_search)
 
 
 if __name__ == '__main__':
