@@ -64,13 +64,25 @@ def chapter_verses(api, c_id):
 
 def search_bible(api, search_string):
     payload = {}
+    array = []
     url = "https://api.scripture.api.bible/v1/bibles/06125adad2d5898a-01/search?query={}&sort=relevance"\
         .format(search_string.replace(" ", "%20"))
     response = requests.request("GET", url, headers=api, data=payload)
     response_json = json.loads(response.text)
     response_json1 = response_json["data"]
-    response_json2 = response_json1["verses"]
-    return response_json2
+    # response_json2 = response_json1["passages"]
+
+    if len(response_json1) > 1:
+        for item in response_json1["verses"]:
+            case = {'reference': item["reference"], 'text': item["text"], "chapterId": item["chapterId"]}
+            array.append(case)
+    elif len(response_json1) == 1:
+        for item in response_json1["passages"]:
+            case = {"reference": item["reference"], "text": item["content"], "chapterId": item["chapterIds"]}
+            array.append(case)
+
+    return array
+
 
 # # # # # Classes # # # # #
 
@@ -137,6 +149,7 @@ def search():
     search_string_response = search_bible(api_header, search_string)
 
     return render_template('search.html', search_string_response=search_string_response)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
