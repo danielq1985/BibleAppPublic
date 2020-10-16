@@ -18,3 +18,13 @@
 {% endfor %}
 
 {% endblock %}
+
+{% block search %}
+<form method="POST">
+
+    {{ form_search.hidden_tag()}}
+    {{ form_search.search_string}}
+    {{ form_search.submit_search() }}
+
+</form>
+{% endblock %}
