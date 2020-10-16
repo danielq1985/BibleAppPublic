@@ -4,12 +4,17 @@
 
 
 {% for item in search_string_response %}
-<ul>
-    <b>{{item["reference"]}}</b>
-    <br>
-    <i>{{item["text"]}}</i>
-</ul>
-
+    {% if search_string_response|length > 1 %}
+        <a class="nav-link" href="/verse?verse_data={{item["chapterId"]}}">{{item["reference"]}}</a>
+        <i><div>{{item["text"]}}</div></i>
+        <br>
+    {% else %}
+        {{item["reference"]}}
+        {% for item2 in item["chapterId"] %}
+            <a class="nav-link" href="/verse?verse_data={{item2}}">{{item2}}</a>
+        {% endfor %}
+        <i><div>{{item["text"] | safe}}</div></i>
+    {% endif %}
 {% endfor %}
 
 {% endblock %}
