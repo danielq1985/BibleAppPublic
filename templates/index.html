@@ -1,37 +1,40 @@
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 {% block content %}
 
 {% endblock %}
 
 {% block jumbo %}
 
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item active" aria-current="page">Bible Version & Book</li>
+  </ol>
+</nav>
+
+
 <form method="POST">
 
 
     {{ form.hidden_tag()}}
-    {{ form.book_list_selector.label}} {{ form.book_list_selector}}
-    {{ form.submit() }}
+    {{ wtf.form_field(form.version) }}
+    {{ wtf.form_field(form.book_list_selector) }}
+    {{ wtf.form_field(form.submit, button_map={'submit':'success'}) }}
 
 
 </form>
 
+</h6>
 
-
-<!--<form method="POST">-->
-
-<!--    {{ form_search.hidden_tag()}}-->
-<!--    {{ form_search.search_string}}-->
-<!--    {{ form_search.submit_search() }}-->
-
-<!--</form>-->
 {% endblock %}
 
 {% block search %}
 <form method="POST">
 
     {{ form_search.hidden_tag()}}
-    {{ form_search.search_string}}
-    {{ form_search.submit_search() }}
+    {{ wtf.form_field(form_search.search_string) }}
+<!--    {{ wtf.form_field(form.submit, button_map={'submit':'success'}) }}-->
+
 
 </form>
 {% endblock %}
