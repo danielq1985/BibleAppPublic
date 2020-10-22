@@ -3,8 +3,10 @@ from flask_wtf import FlaskForm
 from wtforms import SubmitField, SelectField, StringField
 import requests
 import json
+from flask_bootstrap import Bootstrap
 
 app = Flask(__name__)
+Bootstrap(app)
 
 app.config['SECRET_KEY'] = 'my_secret_key'
 
@@ -39,15 +41,16 @@ def book_chapters(api, b_id):
 
 
 def book_chapter_content(api, b_id):
+    book_version = session.get('bible_version')
     payload = {}
-    url = "https://api.scripture.api.bible/v1/bibles/06125adad2d5898a-01/chapters/{}?content-type=text&include-" \
+    url = "https://api.scripture.api.bible/v1/bibles/{}/chapters/{}?content-type=text&include-" \
           "notes=false&include-titles=true&include-chapter-numbers=false&include-verse-numbers=true&include-verse-" \
-          "spans=false".format(b_id)
+          "spans=false".format(book_version, b_id)
     response = requests.request("GET", url, headers=api, data=payload)
     response_json = json.loads(response.text)
     response_json1 = response_json["data"]
-    response_json2 = response_json1["content"]
-    return response_json2
+
+    return response_json1
 
 
 def chapter_verses(api, c_id):
@@ -65,22 +68,29 @@ def chapter_verses(api, c_id):
 def search_bible(api, search_string):
     payload = {}
     array = []
-    url = "https://api.scripture.api.bible/v1/bibles/06125adad2d5898a-01/search?query={}&sort=relevance"\
+
+    if not search_string:
+        search_string = "love"
+    elif search_string == " ":
+        search_string = "love"
+
+    url = "https://api.scripture.api.bible/v1/bibles/06125adad2d5898a-01/search?query={}&limit=1000&sort=canonical"\
         .format(search_string.replace(" ", "%20"))
     response = requests.request("GET", url, headers=api, data=payload)
     response_json = json.loads(response.text)
     response_json1 = response_json["data"]
-    # response_json2 = response_json1["passages"]
 
     if len(response_json1) > 1:
+        search_text = response_json1["query"]
+        result_count = response_json1["total"]
         for item in response_json1["verses"]:
-            case = {'reference': item["reference"], 'text': item["text"], "chapterId": item["chapterId"]}
+            case = {"search_text": search_text, "result_count": result_count, 'reference': item["reference"],
+                    'text': item["text"], "chapterId": item["chapterId"]}
             array.append(case)
     elif len(response_json1) == 1:
         for item in response_json1["passages"]:
             case = {"reference": item["reference"], "text": item["content"], "chapterId": item["chapterIds"]}
             array.append(case)
-
     return array
 
 
@@ -88,12 +98,13 @@ def search_bible(api, search_string):
 
 
 class InfoForm(FlaskForm):
+    version = SelectField(choices=[("06125adad2d5898a-01", "ASV"), ("de4e12af7f28f599-01", "KJV")], default="06125adad2d5898a-01")
     book_list_selector = SelectField(choices=book_list(api_header))
-    submit = SubmitField('Search')
+    submit = SubmitField('>')
 
 
 class SearchForm(FlaskForm):
-    search_string = StringField('Search')
+    search_string = StringField('')
     submit_search = SubmitField('Search')
 
 
@@ -102,11 +113,10 @@ class SearchForm(FlaskForm):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    form = InfoForm()
-    book_data = form.book_list_selector.data
 
-    # form_search = SearchForm()
-    # search_string = False
+    form = InfoForm()
+    session['bible_version'] = form.version.data
+    book_data = form.book_list_selector.data
 
     if form.validate_on_submit():
         return redirect(url_for('book', book_data=book_data))
@@ -124,17 +134,18 @@ def index():
 @app.route('/book', methods=['GET', 'POST'])
 def book():
     book_id = request.args.get('book_data', None)
+
     data = book_chapters(api_header, book_id)
 
     class BookChapter(FlaskForm):
         book_chapter_selector = SelectField(choices=data, default='GEN')
-        submit_book_chapter = SubmitField('Search')
+        submit_book_chapter = SubmitField('>')
 
     form2 = BookChapter()
     verse_data = form2.book_chapter_selector.data
 
     if form2.validate_on_submit():
-        return redirect(url_for('verse', verse_data=verse_data))
+        return redirect(url_for('verse', verse_data=verse_data, book_data=book_id))
 
     form_search = SearchForm()
     search_string = False
@@ -145,10 +156,10 @@ def book():
     return render_template('book.html', book_id=book_id, data=data, form2=form2, form_search=form_search)
 
 
-
 @app.route('/verse', methods=['GET', 'POST'])
 def verse():
     verse_id = request.args.get('verse_data', None)
+    book_id = request.args.get('book_data', None)
     chapter_text = book_chapter_content(api_header, verse_id)
 
     form_search = SearchForm()
@@ -158,7 +169,7 @@ def verse():
         form_search.search_string.data = ''
         return redirect(url_for('search', search_string=search_string))
 
-    return render_template('verses.html', verse_id=verse_id, chapter_text=chapter_text, form_search=form_search)
+    return render_template('verses.html', verse_id=verse_id, book_id=book_id, chapter_text=chapter_text, form_search=form_search)
 
 
 @app.route('/search', methods=['GET', 'POST'])
