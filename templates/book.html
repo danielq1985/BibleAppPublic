@@ -1,13 +1,23 @@
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
 {% block content %}
 
 {% endblock %}
 
 {% block jumbo %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Bible Version & Book </a></li>
+    <li class="breadcrumb-item active" aria-current="page">Book Chapter</li>
+  </ol>
+</nav>
+
+
 <form method="POST">
     {{ form2.hidden_tag()}}
-    {{ form2.book_chapter_selector.label}} {{ form2.book_chapter_selector}}
-    {{ form2.submit_book_chapter() }}
+    {{ wtf.form_field(form2.book_chapter_selector) }}
+    {{ wtf.form_field(form2.submit_book_chapter, button_map={'submit_book_chapter':'success'}) }}
 </form>
 {% endblock %}
 
@@ -15,8 +25,7 @@
 <form method="POST">
 
     {{ form_search.hidden_tag()}}
-    {{ form_search.search_string}}
-    {{ form_search.submit_search() }}
+    {{ wtf.form_field(form_search.search_string) }}
 
 </form>
 {% endblock %}
