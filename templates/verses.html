@@ -1,22 +1,45 @@
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block jumbo %}
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Bible Version & Book</a></li>
+    <li class="breadcrumb-item"><a href="/book?book_data={{chapter_text["bookId"]}}">Book Chapter</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Read</li>
+  </ol>
+</nav>
 
 {% endblock %}
 
 {% block content %}
 
-  {{chapter_text}}
+<h2>{{chapter_text["reference"]}}</h2>
 
+<p>
+    {% if chapter_text["previous"] %}
+    {% set previous = chapter_text["previous"] %}
+    <a class="btn btn-outline-secondary btn-sm" href="/verse?verse_data={{previous["id"]}}">< Previous</a>
+    {% endif %}
+
+    {% if chapter_text["next"] %}
+    {% set next = chapter_text["next"] %}
+    <a class="btn btn-outline-secondary btn-sm" href="/verse?verse_data={{next["id"]}}">Next ></a>
+    {% endif %}
+</p>
+
+{{chapter_text["content"]}}
 
 {% endblock %}
 
 {% block search %}
+
 <form method="POST">
 
     {{ form_search.hidden_tag()}}
-    {{ form_search.search_string}}
-    {{ form_search.submit_search() }}
+    {{ wtf.form_field(form_search.search_string) }}
 
 </form>
+
 {% endblock %}
