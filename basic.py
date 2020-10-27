@@ -15,6 +15,9 @@ api_header = {
 }
 
 
+# # # # # Functions # # # # #
+
+
 def book_list(api):
     book_list_payload = {}
     book_array = []
@@ -24,7 +27,9 @@ def book_list(api):
     book_list_response_json = json.loads(book_list_response.text)
 
     for item in book_list_response_json["data"]:
+        # case = {"id": item["id"], "name": item["name"]}
         book_array.append(item["id"])
+        # book_array.append(case)
     return book_array
 
 
@@ -98,13 +103,15 @@ def search_bible(api, search_string):
 
 
 class InfoForm(FlaskForm):
-    version = SelectField(choices=[("06125adad2d5898a-01", "ASV"), ("de4e12af7f28f599-01", "KJV")], default="06125adad2d5898a-01")
+    version = SelectField(choices=[("06125adad2d5898a-01", "ASV"), ("de4e12af7f28f599-01", "KJV"),
+                                   ("592420522e16049f-01", "Spanish - Reina Valera 1909 ")],
+                          default="06125adad2d5898a-01")
     book_list_selector = SelectField(choices=book_list(api_header))
     submit = SubmitField('>')
 
 
 class SearchForm(FlaskForm):
-    search_string = StringField('')
+    search_string = StringField('', render_kw={"placeholder": "Search Here"})
     submit_search = SubmitField('Search')
 
 
@@ -134,7 +141,6 @@ def index():
 @app.route('/book', methods=['GET', 'POST'])
 def book():
     book_id = request.args.get('book_data', None)
-
     data = book_chapters(api_header, book_id)
 
     class BookChapter(FlaskForm):
