@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content %}
+
+{% for item in search_string_response [:1] %}
+    {% if item["search_text"] %}
+    <h2>{{item["search_text"]}} ({{item["result_count"]}})</h2>
+    <br>
+    {% endif %}
+{% endfor %}
+
+{% for item in search_string_response %}
+    {% if search_string_response|length > 1 %}
+        <p>
+        <a class="btn btn-outline-secondary btn-sm" href="/verse?verse_data={{item["chapterId"]}}">{{item["reference"]}}</a>
+        <i><div>{{item["text"]}}</div></i>
+        </p>
+    {% else %}
+        <h2>{{item["reference"]}}</h2>
+        <p>
+        {% for item2 in item["chapterId"] %}
+            <a class="btn btn-outline-secondary btn-sm" href="/verse?verse_data={{item2}}">{{item2}}</a>
+        {% endfor %}
+        </p>
+        <i><div>{{item["text"] | safe}}</div></i>
+    {% endif %}
+{% endfor %}
+
+{% endblock %}
+
+{% block search %}
+<form method="POST">
+
+    {{ form_search.hidden_tag()}}
+    {{ wtf.form_field(form_search.search_string) }}
+
+</form>
+{% endblock %}
