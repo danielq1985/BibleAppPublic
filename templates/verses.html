@@ -4,32 +4,184 @@
 {% block jumbo %}
 
 <nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="/">Bible Version & Book</a></li>
-    <li class="breadcrumb-item"><a href="/book?book_data={{chapter_text["bookId"]}}">Book Chapter</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Read</li>
-  </ol>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Book</a></li>
+        <li class="breadcrumb-item"><a href="/book?book_data={{chapter_text["bookId"]}}">Chapter</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Read</li>
+    </ol>
 </nav>
 
 {% endblock %}
 
 {% block content %}
 
-<h2>{{chapter_text["reference"]}}</h2>
+<div style="margin:50px">
+    <div class="row">
+        <div class="col-4">
+                {% if 'intro' in chapter_text["id"] %}
+                    <h2>{{chapter_text["reference"]}}(intro)</h2>
+                {% else %}
+                    <h2>{{chapter_text_esv["canonical"]}}</h2>
+                {% endif %}
+            <p>
+                {% if chapter_text["previous"] %}
+                {% set previous = chapter_text["previous"] %}
+                <a class="btn btn-outline-secondary btn-sm" href="/verse?verse_data={{previous["id"]}}">< Previous</a>
+                {% endif %}
 
-<p>
-    {% if chapter_text["previous"] %}
-    {% set previous = chapter_text["previous"] %}
-    <a class="btn btn-outline-secondary btn-sm" href="/verse?verse_data={{previous["id"]}}">< Previous</a>
-    {% endif %}
+                {% if chapter_text["next"] %}
+                {% set next = chapter_text["next"] %}
+                <a class="btn btn-outline-secondary btn-sm" href="/verse?verse_data={{next["id"]}}">Next ></a>
+                {% endif %}
 
-    {% if chapter_text["next"] %}
-    {% set next = chapter_text["next"] %}
-    <a class="btn btn-outline-secondary btn-sm" href="/verse?verse_data={{next["id"]}}">Next ></a>
-    {% endif %}
-</p>
+            </p>
+            <div class="pre-scrollable" style="max-height: 55vh">
+                {{content}}
+                {% if switch == 1 %}
+                <br>
+                <br>
+                The Holy Bible, English Standard Version® (ESV®), copyright © 2001 by Crossway, a publishing ministry of Good News Publishers.
+                {% endif %}
+                            </div>
+        </div>
+        {% if cross_ref %}
+        <div class="col-4">
+            <br>
+            <br>
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                       aria-controls="home" aria-selected="true">Cross References({{cross_ref|length}})</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+                       aria-controls="profile" aria-selected="false">People - Places - Time</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab"
+                       aria-controls="contact" aria-selected="false">Book Info.</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    <div class="pre-scrollable" style="max-height: 56vh">
+                        <br>
+                    {% if cross_ref %}
+                        {% for item in cross_ref %}
+                        <p>
+                            Verse: {{item["Verse"]}} <br>
+                            {% for k, v in item["Verses"].items() %}
 
-{{chapter_text["content"]}}
+                            <a class="process_input" id="{{k}}" data-toggle="collapse" href="#" role="button"
+                               >{{k}}</a>
+                            <br>
+                            {% endfor %}
+                        </p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                </div>
+                <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                    <div class="pre-scrollable" style="max-height: 56vh">
+                    <br>
+                    {% if peopleplacetime %}
+
+                        <p>
+
+                            <br>
+                            {% if peopleplacetime['people'] %}
+                                    People: <br>
+                                    {% for k,v in peopleplacetime['people'].items() %}
+                                        <a class="process_input_people" id="{{k}}" data-toggle="collapse" href="#" role="button"
+                                        aria-expanded="false" aria-controls="collapseExample">{{v}}</a>
+                                        <br>
+                                    {% endfor %}
+
+                            {% endif %}
+
+                            {% if peopleplacetime['places'] %}
+                                    Places: <br>
+                                    {% for k,v in peopleplacetime['places'].items() %}
+                                        <a class="process_input_places" id="{{k}}" data-toggle="collapse" href="#" role="button"
+                                        aria-expanded="false" aria-controls="collapseExample">{{v}}</a>
+                                        <br>
+                                    {% endfor %}
+                            {% endif %}
+                        </p>
+
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">Coming Soon!</div>
+            </div>
+        </div>
+        <div class="col-4">
+            <br>
+            <br>
+            <br>
+            <br>
+            <div class="pre-scrollable" style="max-height: 56vh">
+            <div id="result">
+            </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type=text/javascript>
+			$(function() {
+			  $('a.process_input').bind('click', function() {
+			  var item = $(this).attr('id');
+			  $.getJSON('/ref/' + item, function(data) {
+			        var ref = data.ref
+			        var text = data.text
+                    var rendered = "<h4>" + ref + "</h4>" + "<br>" + text
+                    document.getElementById('result').innerHTML = rendered;
+				});
+				return false;
+			  });
+			});
+</script>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type=text/javascript>
+			$(function() {
+			  $('a.process_input_people').bind('click', function() {
+			  var item = $(this).attr('id');
+			  $.getJSON('/person/' + item, function(data) {
+			        var display = data.display
+			        var akaDis = data.akaDis
+			        var dictText = data.dictText
+			        let verses = data.button
+
+                    var rendered = "<h4>" + display + "</h4>" + akaDis + "<br>"  + dictText + "<br>"
+
+                    document.getElementById('result').innerHTML = rendered;
+				});
+				return false;
+			  });
+			});
+</script>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type=text/javascript>
+			$(function() {
+			  $('a.process_input_places').bind('click', function() {
+			  var item = $(this).attr('id');
+			  $.getJSON('/place/' + item, function(data) {
+			        var display = data.display
+			        var dictText = data.dictText
+                    var rendered = "<h4>" + display + "</h4>" + "<br>" + dictText
+                    document.getElementById('result').innerHTML = rendered;
+				});
+				return false;
+			  });
+			});
+</script>
 
 {% endblock %}
 
