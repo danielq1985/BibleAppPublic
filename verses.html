@@ -9,11 +9,19 @@
         <li class="breadcrumb-item"><a href="/book?book_data={{chapter_text["bookId"]}}">Chapter</a></li>
         <li class="breadcrumb-item active" aria-current="page">Read</li>
     </ol>
+
+
 </nav>
 
 {% endblock %}
 
 {% block content %}
+
+<div id='loadingmessage' style='display:none'>
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden"></span>
+    </div>
+</div>
 
 <div style="margin:50px">
     <div class="row">
@@ -26,12 +34,12 @@
             <p>
                 {% if chapter_text["previous"] %}
                 {% set previous = chapter_text["previous"] %}
-                <a class="btn btn-outline-secondary btn-sm" href="/verse?verse_data={{previous["id"]}}">< Previous</a>
+                <a class="btn btn-outline-secondary btn-sm" id=loadingMain href="/verse?verse_data={{previous["id"]}}">< Previous</a>
                 {% endif %}
 
                 {% if chapter_text["next"] %}
                 {% set next = chapter_text["next"] %}
-                <a class="btn btn-outline-secondary btn-sm" href="/verse?verse_data={{next["id"]}}">Next ></a>
+                <a class="btn btn-outline-secondary btn-sm" id=loadingMain href="/verse?verse_data={{next["id"]}}">Next ></a>
                 {% endif %}
 
             </p>
@@ -43,6 +51,9 @@
                 The Holy Bible, English Standard Version® (ESV®), copyright © 2001 by Crossway, a publishing ministry of Good News Publishers.
                 {% endif %}
                             </div>
+
+
+
         </div>
         {% if cross_ref %}
         <div class="col-4">
@@ -55,11 +66,11 @@
                 </li>
                 <li class="nav-item" role="presentation">
                     <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
-                       aria-controls="profile" aria-selected="false">People - Places - Time</a>
+                       aria-controls="profile" aria-selected="false">People({{peopleplacetime['people']|length}}) Places({{peopleplacetime['places']|length}})</a>
                 </li>
                 <li class="nav-item" role="presentation">
                     <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab"
-                       aria-controls="contact" aria-selected="false">Book Info.</a>
+                       aria-controls="contact" aria-selected="false">Book - Chapter</a>
                 </li>
             </ul>
             <div class="tab-content" id="myTabContent">
@@ -72,7 +83,7 @@
                             Verse: {{item["Verse"]}} <br>
                             {% for k, v in item["Verses"].items() %}
 
-                            <a class="process_input" id="{{k}}" data-toggle="collapse" href="#" role="button"
+                            <a class="process_input" id="{{v}}" data-toggle="collapse" href="#" role="button"
                                >{{k}}</a>
                             <br>
                             {% endfor %}
@@ -88,13 +99,12 @@
                     {% if peopleplacetime %}
 
                         <p>
-
-                            <br>
                             {% if peopleplacetime['people'] %}
                                     People: <br>
                                     {% for k,v in peopleplacetime['people'].items() %}
                                         <a class="process_input_people" id="{{k}}" data-toggle="collapse" href="#" role="button"
                                         aria-expanded="false" aria-controls="collapseExample">{{v}}</a>
+
                                         <br>
                                     {% endfor %}
 
@@ -107,13 +117,34 @@
                                         aria-expanded="false" aria-controls="collapseExample">{{v}}</a>
                                         <br>
                                     {% endfor %}
+
                             {% endif %}
                         </p>
 
                     </div>
                     {% endif %}
                 </div>
-                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">Coming Soon!</div>
+                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+<!--                    {% if peopleplacetime['book_authors'] %}-->
+<!--                        <br>-->
+<!--                        Book Author(s): <br>-->
+<!--                        {% for k,v in peopleplacetime['book_authors'].items() %}-->
+<!--                            <a class="process_input_people" id="{{k}}" data-toggle="collapse" href="#" role="button"-->
+<!--                            aria-expanded="false" aria-controls="collapseExample">{{v}}</a>-->
+<!--                            <br>-->
+<!--                        {% endfor %}-->
+<!--                    {% endif %}-->
+
+                    {% if peopleplacetime['chapter_authors'] %}
+                        <br>
+                        Chapter Author(s): <br>
+                        {% for k,v in peopleplacetime['chapter_authors'].items() %}
+                            <a class="process_input_people" id="{{k}}" data-toggle="collapse" href="#" role="button"
+                            aria-expanded="false" aria-controls="collapseExample">{{v}}</a>
+                            <br>
+                        {% endfor %}
+                    {% endif %}
+                </div>
             </div>
         </div>
         <div class="col-4">
@@ -123,6 +154,8 @@
             <br>
             <div class="pre-scrollable" style="max-height: 56vh">
             <div id="result">
+                
+                {{ peopleplacetime['book_info']|safe }}
             </div>
             </div>
         </div>
@@ -131,16 +164,25 @@
 </div>
 
 
+
+
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type=text/javascript>
 			$(function() {
 			  $('a.process_input').bind('click', function() {
+<!--              $(document).on('click', 'a.process_input', function() {-->
+                $('#loadingmessage').show();  // show the loading message.
 			  var item = $(this).attr('id');
+			  var back = $(this).attr('back_key');
 			  $.getJSON('/ref/' + item, function(data) {
+
 			        var ref = data.ref
 			        var text = data.text
-                    var rendered = "<h4>" + ref + "</h4>" + "<br>" + text
+			        var goto_chapter = data.goto_chapter
+
+                    var rendered = "<h4>" + ref + goto_chapter + "</h4>" + "<br>" + text
                     document.getElementById('result').innerHTML = rendered;
+                    $('#loadingmessage').hide(); // hide the loading message
 				});
 				return false;
 			  });
@@ -149,18 +191,45 @@
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type=text/javascript>
+            $(function() {
+              $(document).on('click', 'a.process_input_verse_modal', function() {
+              $('#loadingmessageModal').show();  // show the loading message.
+              $('#loadingmessageModal1').show();  // show the loading message.
+              var item = $(this).attr('id');
+              var back = $(this).attr('back_key');
+              $.getJSON('/ref_modal/' + item, function(data) {
+
+                    var ref = data.ref
+                    var text = data.text
+                    var goto_chapter = data.goto_chapter
+                    var rendered = "<h4>" + ref + goto_chapter + "</h4>" + "<br>" + text
+                    document.getElementById('modal-body').innerHTML = rendered;
+                });
+                return false;
+              });
+            });
+</script>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type=text/javascript>
 			$(function() {
 			  $('a.process_input_people').bind('click', function() {
+			  $('#loadingmessage').show();  // show the loading message.
 			  var item = $(this).attr('id');
 			  $.getJSON('/person/' + item, function(data) {
 			        var display = data.display
 			        var akaDis = data.akaDis
 			        var dictText = data.dictText
 			        let verses = data.button
+			        var birth_year = data.birth_year_display
+			        var death_year = data.death_year_display
+			        var modal = data.modal
 
-                    var rendered = "<h4>" + display + "</h4>" + akaDis + "<br>"  + dictText + "<br>"
+                    var rendered = "<h4>" + display + "</h4>" + akaDis + birth_year + death_year +
+                    "<br>" + dictText + "<br><br>" + "<b>Verses: </b>" + modal
 
                     document.getElementById('result').innerHTML = rendered;
+                    $('#loadingmessage').hide(); // hide the loading message
 				});
 				return false;
 			  });
@@ -171,16 +240,52 @@
 <script type=text/javascript>
 			$(function() {
 			  $('a.process_input_places').bind('click', function() {
+			  $('#loadingmessage').show();  // show the loading message.
 			  var item = $(this).attr('id');
 			  $.getJSON('/place/' + item, function(data) {
 			        var display = data.display
 			        var dictText = data.dictText
-                    var rendered = "<h4>" + display + "</h4>" + "<br>" + dictText
+			        var verses = data.modal
+			        var map = data.map
+                    var rendered = "<h4>" + display + map + "</h4>" + "<br>" + dictText + "<br><br>" + "<b>Verses: </b>"
+                    + verses
                     document.getElementById('result').innerHTML = rendered;
+                    $('#loadingmessage').hide(); // hide the loading message
 				});
 				return false;
 			  });
 			});
+</script>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type=text/javascript>
+        $(function() {
+        $(document).on('click', 'a#loadingMain', function() {
+<!--          $('a#loadingMain').on('click', function() {-->
+          $('#loadingmessage').show();  // show the loading message.
+            e.preventDefault()
+            $.getJSON('/',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+</script>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type=text/javascript>
+        $(function() {
+        $(document).on('click', 'a#loadingMainModal', function() {
+          $('#loadingmessage').show();  // show the loading message.
+            e.preventDefault()
+            $.getJSON('/',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
 </script>
 
 {% endblock %}

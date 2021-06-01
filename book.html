@@ -2,7 +2,11 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block content %}
-
+<div id='loadingmessage' style='display:none'>
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden"></span>
+    </div>
+</div>
 {% endblock %}
 
 {% block jumbo %}
@@ -26,7 +30,24 @@
 </form>
 
 
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type=text/javascript>
+        $(function() {
+        $(document).bind('submit', 'a#submit_book_chapter', function() {
+          $('#loadingmessage').show();  // show the loading message.
+            e.preventDefault()
+            $.getJSON('/',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+</script>
+
 {% endblock %}
+
 
 {% block search %}
 <form method="POST">
