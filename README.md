@@ -13,5 +13,5 @@ https://api.esv.org/
   -Python, Flask, Pandas, Folium, Requests(JSON)
   
   
-(/images/1.jpg)
+!(/images/1.jpg)
  
