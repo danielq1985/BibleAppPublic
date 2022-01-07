@@ -12,6 +12,7 @@ https://api.esv.org/
 ### Tech used:
   -Python, Flask, Pandas, Folium, Requests(JSON)
   
-  
+ Screenshots: 
 ![alt_text](/images/1.jpg)
+![alt_text](/images/2.jpg)
  
