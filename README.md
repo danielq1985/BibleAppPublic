@@ -10,9 +10,9 @@ https://api.esv.org/
 *Note: you must sign up for 2 API keys to use this app, they will be removed in main.py*
 
 ### Tech used:
--Python
--Flask
--Pandas
--Folium
--Requests (JSON)
+  -Python
+  -Flask
+  -Pandas
+  -Folium
+  -Requests (JSON)
 
