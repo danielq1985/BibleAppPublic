@@ -4,8 +4,9 @@ This is a bible resource designed to make reading the bible in an intuitive way.
 
 ### Resources:
 https://viz.bible/cms/
-https://scripture.api.bible/  # Must sign up for API key
+https://scripture.api.bible/  
 https://api.esv.org/
+*Note: you must sign up for 2 API keys to use this app, they will be removed in main.py
 
 ### Tech used:
 -Python
