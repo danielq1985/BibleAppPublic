@@ -14,8 +14,7 @@ This is a bible resource designed to make reading the bible in an intuitive way.
   
 ### Screenshots: 
 A side-by-side interface makes it easy to explore the main scripture while diving into cross references, people, and places (with maps!) easy.
-
-
+##
 ![alt_text](/images/1.jpg)
 ![alt_text](/images/2.jpg)
  
