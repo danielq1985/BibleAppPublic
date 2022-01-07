@@ -1,9 +1,9 @@
 # Bible Context 
 
-This is a Flask APP that will run on your local machine until ready for deployment
--> Run basic.py and there should be a clickable ip address/port to run
+This is a bible resource designed to make reading the bible in an intuitive way. It allows you to read the main scripture while researching cross references, people, and places all with the same interface.
 
-This app is built on the API from https://scripture.api.bible/ 
-and https://api.esv.org/
+Resources:
+https://viz.bible/cms/
+https://scripture.api.bible/ 
+https://api.esv.org/
 
-There are 2 API keys needed to run this app that will be removed on public repository. 
