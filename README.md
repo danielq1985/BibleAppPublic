@@ -13,11 +13,11 @@ This is a bible resource designed to make reading the bible in an intuitive way.
   -Python, Flask, Pandas, Folium, Requests(JSON), Heroku
   
 ### Screenshots: 
-A side-by-side interface makes it easy to explore the main scripture while diving into cross references, people, and places (with maps!) easy.
+A side-by-side interface makes it easy to explore the main scripture while diving into cross-references, people, and places (with maps!) easy.
 ##
 ![alt_text](/images/1.jpg)
 ![alt_text](/images/2.jpg)
  #
-### Heres the link!
+### Here's the link!
 http://biblecontext.herokuapp.com/
 *Note: this was deployed on a Heroku hobby-grade server, so it may take 15 seconds to load the 1st time of use*
