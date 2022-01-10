@@ -18,6 +18,6 @@ A side-by-side interface makes it easy to explore the main scripture while divin
 ![alt_text](/images/1.jpg)
 ![alt_text](/images/2.jpg)
  #
-### Here's the link!
+### Website Link
 http://biblecontext.herokuapp.com/
-*Note: this was deployed on a Heroku hobby-grade server, so it may take 15 seconds to load the 1st time of use*
+*Note: this was deployed on a Heroku hobby-grade server so it may take 15 seconds to load the 1st time of use*
