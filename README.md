@@ -3,6 +3,7 @@
 This is a bible resource designed to bring context to each verse.
 
 ### Background:
+The bible is a library of books written by many authors over a thousand years ago. There are hundred to thousands of people, places, and other bible verses referenced in the text. 
 
 
 ### Tech used:
