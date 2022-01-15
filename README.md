@@ -2,7 +2,8 @@
 
 This is a bible resource designed to bring context to each verse.
 
-*Note: you must sign up for 2 API keys to use this app, they will be removed in the main.py file*
+### Background:
+
 
 ### Tech used:
   Python, Flask, Pandas, Folium, Requests(JSON), Heroku
